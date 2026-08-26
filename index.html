@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMER TNUSHAI // CORE INTERFACE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #040810;
+            --primary-cyan: #00f3ff;
+            --primary-pink: #ff007f;
+            --glass-bg: rgba(8, 15, 30, 0.75);
+            --glass-border: rgba(0, 243, 255, 0.3);
+            --text-main: #e2f1ff;
+            --text-dim: #708aa4;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .dashboard-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 440px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 35px 25px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);
+            text-align: center;
+        }
+
+        .header-tag {
+            font-family: var(--font-head);
+            font-size: 0.75rem;
+            color: var(--primary-pink);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .main-title {
+            font-family: var(--font-head);
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 15px var(--primary-cyan);
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-cyber {
+            position: relative;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+            padding: 16px 20px;
+            font-family: var(--font-head);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+
+        .btn-cyber:hover, .btn-cyber:active {
+            background: var(--primary-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 25px var(--primary-cyan);
+        }
+
+        .btn-cyber.pink-variant {
+            border-color: var(--primary-pink);
+            color: var(--primary-pink);
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.1);
+        }
+
+        .btn-cyber.pink-variant:hover, .btn-cyber.pink-variant:active {
+            background: var(--primary-pink);
+            color: #fff;
+            box-shadow: 0 0 25px var(--primary-pink);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(4, 8, 16, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .cyber-modal-card {
+            background: rgba(6, 10, 18, 0.95);
+            border: 2px solid var(--primary-cyan);
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 440px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.25);
+        }
+
+        .scanline {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-cyan);
+            box-shadow: 0 0 10px var(--primary-cyan);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .scanline-1 { animation: scanSweep 2.5s infinite linear; }
+        .scanline-2 { animation: scanSweep 3.5s infinite linear 0.8s; }
+
+        @keyframes scanSweep {
+            0% { top: -10%; opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+        }
+
+        .modal-title {
+            font-family: var(--font-head);
+            font-size: 0.85rem;
+            color: var(--primary-cyan);
+            letter-spacing: 1px;
+        }
+
+        .status-tag {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            background: rgba(255, 0, 127, 0.2);
+            border: 1px solid var(--primary-pink);
+            color: var(--primary-pink);
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .info-body {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .info-avatar {
+            width: 65px;
+            height: 65px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .avatar-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed var(--primary-cyan);
+            border-radius: 50%;
+            animation: spinRing 8s linear infinite;
+        }
+
+        @keyframes spinRing {
+            100% { transform: rotate(360deg); }
+        }
+
+        .avatar-icon {
+            width: 38px;
+            height: 38px;
+            fill: var(--primary-cyan);
+        }
+
+        .info-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .info-row .label { color: var(--text-dim); }
+        .info-row .val.cyan { color: var(--primary-cyan); font-weight: 700; }
+        .info-row .val.pink { color: var(--primary-pink); font-weight: 700; }
+
+        .loading-wrapper {
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .loading-text {
+            font-family: var(--font-head);
+            font-size: 0.7rem;
+            color: var(--primary-cyan);
+            margin-bottom: 5px;
+            text-align: left;
+            letter-spacing: 1px;
+        }
+
+        .loading-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-pink));
+            box-shadow: 0 0 10px var(--primary-cyan);
+            transition: width 0.05s linear;
+        }
+
+        .terminal-text-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--primary-cyan);
+            min-height: 140px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            text-align: left;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .cyber-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--primary-cyan);
+            padding: 12px 15px;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .error-text {
+            color: var(--primary-pink);
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="dashboard-container">
+        <div class="header-tag">// INTERFACE v2.6</div>
+        <h1 class="main-title">UMER TNUSHAI</h1>
+        
+        <div class="btn-group">
+            <button class="btn-cyber" onclick="openInfoModal()">
+                <span>GET INFO</span>
+            </button>
+            <button class="btn-cyber pink-variant" onclick="openVerificationModal()">
+                <span>VERIFY IDENTITY</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- BUTTON 1: INFO MODAL -->
+    <div class="modal-backdrop" id="infoModal">
+        <div class="cyber-modal-card">
+            <div class="scanline scanline-1"></div>
+            <div class="scanline scanline-2"></div>
+            
+            <div class="modal-header">
+                <h3 class="modal-title">SYSTEM DIAGNOSTICS // CORE INFO</h3>
+                <span class="status-tag">ACTIVE</span>
+            </div>
+
+            <div class="info-body">
+                <div class="info-avatar">
+                    <div class="avatar-ring"></div>
+                    <svg viewBox="0 0 24 24" class="avatar-icon">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                </div>
+
+                <div class="info-details">
+                    <div class="info-row">
+                        <span class="label">IDENTITY:</span>
+                        <span class="val cyan">UMER TNUSHAI</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">ROLE:</span>
+                        <span class="val pink">CORE OPERATOR</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">CLEARANCE:</span>
+                        <span class="val">LEVEL 5 / OVERRIDE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading-wrapper" id="loadingWrapper">
+                <div class="loading-text" id="loadingText">LOADING PROFILE DATA... 0%</div>
+                <div class="loading-bar-bg">
+                    <div class="loading-bar-fill" id="loadingBarFill"></div>
+                </div>
+            </div>
+
+            <div class="terminal-text-box" id="infoTerminalText"></div>
+
+            <button class="btn-cyber" style="margin-top: 15px; width: 100%;" onclick="closeInfoModal()">
+                CLOSE CORE DATA
+            </button>
+        </div>
+    </div>
+
+    <!-- BUTTON 2: VERIFICATION MODAL -->
+    <div class="modal-backdrop" id="verifyModal">
+        <div class="cyber-modal-card">
+            <div class="scanline scanline-1"></div>
+            <div class="scanline scanline-2"></div>
+            
+            <div class="modal-header">
+                <h3 class="modal-title">SECURITY GATEWAY</h3>
+                <span class="status-tag">RESTRICTED</span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px;">ENTER AUTHORIZED CODE / NAME:</p>
+            <input type="text" id="nameInput" class="cyber-input" placeholder="Type your name please" autocomplete="name">
+            <div class="error-text" id="errorMsg">PLEASE ENTER A VALID VALUE</div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-cyber" style="flex: 1;" onclick="verifyIdentity()">VERIFY</button>
+                <button class="btn-cyber pink-variant" style="flex: 1;" onclick="closeVerificationModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECRET DISPLAY OVERLAY -->
+    <div class="modal-backdrop" id="secretDisplay">
+        <div class="cyber-modal-card" style="border-color: var(--primary-pink);">
+            <div class="scanline scanline-1"></div>
+
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: var(--primary-pink);">ACCESS GRANTED // SECRET DECRYPTED</h3>
+                <span class="status-tag">VERIFIED</span>
+            </div>
+
+            <div class="terminal-text-box" id="secretTerminalText" style="border-color: rgba(255, 0, 127, 0.3); color: var(--primary-pink);"></div>
+
+            <button class="btn-cyber pink-variant" style="margin-top: 15px; width: 100%;" onclick="closeSecretDisplay()">DISCONNECT</button>
+        </div>
+    </div>
+
+    <script>
+        function typeWriter(text, elementId, speed = 15) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = '';
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Button 1 logic
+        function openInfoModal() {
+            document.getElementById('infoModal').classList.add('show');
+            const loadingWrapper = document.getElementById('loadingWrapper');
+            const loadingBarFill = document.getElementById('loadingBarFill');
+            const loadingText = document.getElementById('loadingText');
+            
+            document.getElementById('infoTerminalText').innerHTML = '';
+            loadingWrapper.style.display = 'block';
+            loadingBarFill.style.width = '0%';
+            
+            let progress = 0;
+            const loadInterval = setInterval(() => {
+                progress += 5;
+                if (progress > 100) progress = 100;
+                loadingBarFill.style.width = progress + '%';
+                loadingText.innerText = `LOADING PROFILE DATA... ${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(loadInterval);
+                    setTimeout(() => {
+                        loadingWrapper.style.display = 'none';
+                        typeWriter(
+                            "> INITIALIZING SYSTEM DIAGNOSTICS...\n> INTEGRITY CHECK: 100% STABLE\n--------------------------------\n> MY SELF: TNUSHAI, UMER TNUSHAI\n> LOCATION: 41/12/L IN CHICHAWATNI\n> FAMILY & PETS: 1 SISTER, MOTHER, FATHER, A CAT, MAY TNUSHAI\n> PASSION: SUPER BIKES\n> DREAM BIKE: KAWASAKI NINJA H2R",
+                            'infoTerminalText'
+                        );
+                    }, 150);
+                }
+            }, 20);
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('show');
+        }
+
+        // Button 2 logic
+        function openVerificationModal() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('verifyModal').classList.add('show');
+            document.getElementById('nameInput').value = '';
+        }
+
+        function closeVerificationModal() {
+            document.getElementById('verifyModal').classList.remove('show');
+        }
+
+        function verifyIdentity() {
+            const val = document.getElementById('nameInput').value.trim();
+            if (val.length > 0) {
+                closeVerificationModal();
+                document.getElementById('secretDisplay').classList.add('show');
+                typeWriter(
+                    "> SECRET MESSAGE DECRYPTED:\n-------------------------\n> T = I\n> N = N\n> U = UMER\n> SHAI = SHAL\n-------------------------\n> RESULT: INSHAL\n\n> WEBSITE INQUIRIES: 03065379541",
+                    'secretTerminalText'
+                );
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+
+        function closeSecretDisplay() {
+            document.getElementById('secretDisplay').classList.remove('show');
+        }
+
+        // Particle Background
+        window.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+
+            for (let i = 0; i < 25; i++) {
+                particles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    radius: Math.random() * 2 + 0.8,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+
+            function renderParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+
+                    ctx.fillStyle = `rgba(0, 243, 255, ${p.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(renderParticles);
+            }
+            renderParticles();
+        });
+    </script>
+</body>
+  </html>
+  
